@@ -9,4 +9,20 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-BookOnline::Application.config.secret_key_base = '1c4ac5407010338f4e771f316f327cb3a12ef54c74941f9b6c71a22774344f6ae46f041430b5024b2a00ac42d4710e8adf4194263a86002e865906d800c22ca7'
+
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+BookOnline::Application.config.secret_key_base = secure_token
